@@ -1,0 +1,128 @@
+See the README.md file for creating the new ISO image.
+
+PLEASE READ THIS ENTIRE DOCUMENT BEFORE BOOTING THE INSTALLATION!
+
+  This tool will create an ISO image which will install a generic
+Devuan "Jessie" Linux unless you choose one of the "Octoprint
+Install" options at boot.
+
+  Running any of the "Octoprint Install" options basically sets up an
+i386 work-alike to the popular "Octopi" Raspberry Pi image.  It is
+intended to be an appliance, not a general-use workstation installation.
+
+  The idea is to make the installation as transparent, painless, and
+bulletproof as possible,  while still allowing further configuration and
+software installs after the base installation.
+
+To install the OctoPrint suite:
+Boot your target system from the CD or USB.
+When the splash screen appears, choose "Octoprint Installs" and then one
+of the options described below.
+
+CHOOSING "AutoInstall", "AutoInstall With Manual Network" OR "EeePC Install"
+WILL AUTOMATICALLY AND IRREVERSIBLY ERASE YOUR HARD DRIVE.  DO NOT CHOOSE
+THE "AutoInstall", "AutoInstall With Manual Network" OR THE "EeePC Install"
+OPTION UNLESS YOU UNDERSTAND WHAT THAT MEANS.
+
+  I will not be responsible for any lost data or damage.
+
+
+I.  The "Full Interactive Plus Octoprint" option:
+1) Walks through an "expert" text-mode Devuan install.
+2) Installs Octoprint in /home/pi and sets it to run as a system service.
+3) Installs mjpg-streamer in /home/mjpeg and sets it to run as a system
+     service.
+4) Uses "traditional" volume identifiers in /etc/fstab.
+ 
+  Please refer to Devuan's installation instructions for further
+information.
+
+
+II.  The "AutoInstall" option:
+
+The installer will run, installing a minimal Devuan system and the packages
+required to install OctoPrint.  If you have a wireless interface you will
+be prompted to configure that.
+
+WARNING:  There are NO further confirmations after selecting AutoInstall!!!
+Your hard drive will be repartitioned and ALL data lost.  You have been
+warned.
+
+1)  AutoInstall assumes that the first IDE/SATA hard drive is the target
+      disk, that the entire disk is available for use, and that the GRUB
+      bootloader should be installed to /dev/sda.
+2)  Configures the system as a DHCP client on the "default" network
+      interface.
+3)  Creates a user "octo" for login and general work, with password
+      "octo86".
+4)  Sets the root password to "ChangeMeNow"
+5)  Installs a very minimal commandline Devuan with no X11.
+6)  Installs Octoprint in /home/pi and sets it to run at
+      boot as a system service.
+7)  Installs mjpg-streamer in /home/mjpeg and sets it to
+      run at boot as a system service.
+8)  Configures the "apt" suite of package tools to NOT
+      install "Recommended" packages.
+9)  Uses "traditional" volume identifiers in /etc/fstab.
+10) Configures apt not to install "recommended" dependencies.
+11) The "pi" and "mjpeg" accounts are not to be used as interactive logins
+      and should not have passwords set at all.
+12) If a wireless interface is configured during install,
+      it will remain configured after installation.  The
+      Wifi credentials are stored in:
+      /etc/wpa-supplicant/wpa.conf
+      The interface up/down information is written to:
+      /etc/network/interfaces.d/00wireless 
+
+WARNING:  There are NO further confirmations after selecting AutoInstall!!!
+Your hard drive will be repartitioned and ALL data lost.  You have been
+warned.
+
+
+III. "AutoInstall With Manual Partitioning"
+  Same as AutoInstall except that disk partitioning and GRUB configuration
+are manual.
+  You should choose this option if you want to boot from a USB drive or
+want to leave other operating systems installed.
+
+
+IV. "AutoInstall With Manual Partitioning"
+  Same as AutoInstall except that you'll be asked to provide information
+for a static network configuration.
+
+V.  "EeePC Install"
+  This is a full-auto installation set up for early ASUS EeePC (aka my
+test system).  The EeePC requires a small Type 0xEF partition as the
+first partition.
+  The installer does not grok that partition type, so you'll need to change
+it with fdisk after installation.
+
+WARNING:  There are NO further confirmations after selecting
+"EeePC Install"!!! Your hard drive will be repartitioned and ALL data
+lost.  You have been warned again.
+
+
+V.  Post-Install for all Octoprint Install options:
+1)  Once the installation has finished the system will reboot and you can
+      log in as root (password ChangeMeNow) or as octo (password octo86). 
+      You should change both users' passwords immediately!
+2)  Octoprint is available at:
+      http://<your IP>/
+    The webcam is accessed at:
+      http://<your IP>/webcam/
+    The webcam streaming image is accessed at:
+      http://<your IP>/webcam/?action=stream
+    (This is the address to use when configuring OctoPrint.)
+3)  If your client supports ZeroConf networks, such as Bonjour or Avahi,
+      Octoprint is available at:
+      http://octo86.local/
+      no matter what IP or DNS hostname it has.
+4)  If the installer does not leave the wireless interface configured
+      after installation, you can run the "Fifi" tool as root
+      after reboot to enable it:
+      /home/OctoSetup/Fifi <ESSID> <passphrase>
+
+If your disk size permits, you can run the "tasksel" program to install a
+graphical desktop or other utilities.
+
+Good Luck!

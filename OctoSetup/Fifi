@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+  echo
+  echo "Usage:"
+  echo "wifi.bash <ESSID> <passphrase>"
+  echo
+  echo
+  exit
+fi
+
+if [ -z $2 ]; then
+  echo
+  echo "Usage:"
+  echo "wifi.bash <ESSID> <passphrase>"
+  echo
+  echo
+  exit
+fi
+
+cat /dev/null  > /etc/wpa_supplicant/wpa.conf
+/usr/bin/wpa_passphrase $1 $2 > /etc/wpa_supplicant/wpa.conf
+/bin/chmod 0600 /etc/wpa_supplicant/wpa.conf
+
+IFACE=$(/sbin/iwconfig 2> /dev/null |grep 802 |cut -f1 -d\ )
+
+# Check to see if this has been run before.  If so retrieve
+# the backup interfaces file.
+if [ -f /tmp/interfaces ]; then
+  cp -p /tmp/interfaces /etc/network/interfaces
+fi
+
+# Back up the file in case of fubar
+cp -p /etc/network/interfaces /tmp/interfaces 
+
+echo " ">> /etc/network/interfaces
+echo "auto $IFACE">> /etc/network/interfaces
+echo "iface $IFACE inet dhcp" >> /etc/network/interfaces
+echo "    wpa-conf  /etc/wpa_supplicant/wpa.conf" >> /etc/network/interfaces
+/sbin/ifup $IFACE
+echo
+echo
+ifconfig $IFACE
+

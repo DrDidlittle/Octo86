@@ -1,0 +1,22 @@
+# These settings are used by the /etc/init.d/mjpg-streamer script
+# You probably should only change INPUT_ARGS and RESOLUTION
+
+# change this to a resolution supported by your webcam
+RESOLUTION=1024x768
+
+# Your webcam may require different arguments
+INPUT_ARGS="-r $RESOLUTION"
+
+# Sets the output port to 8080 and the derver's directory to /var/www
+OUTPUT_ARGS="-p 8080 -w /var/www"
+
+# Set to "no" ONLY if you don't want mjpg-streamer to run as a service at all
+START=yes
+
+# These settings should not be changed
+DAEMON=/usr/local/bin/mjpg_streamer
+USER=mjpeg
+LD_LIBRARY_PATH=/usr/local/lib
+INPUT=input_uvc.so
+OUTPUT=output_http.so
+UMASK=022

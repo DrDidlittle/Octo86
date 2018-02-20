@@ -1,0 +1,92 @@
+#!/bin/bash +x
+
+########################################################################
+#                                                                      #
+#  This script unpacks the Devuan Jessie "netinst" iso, adds the files #
+# necessary for installation of OctoPrint and mjpg-streamer, and sets  #
+# up several automated installations.                                  #
+#                                                                      #
+#  It has not been tested on any other version of Devuan and it is     #
+# certain to fail with a Debian, Ubuntu or Lubuntu install image.      #
+#                                                                      #
+#  Please read the README file included with this script before you    #
+# continue.                                                            #
+#                                                                      #
+########################################################################
+
+
+USAGE="\n\tUsage:\n\n\t./twiddler <ARCH> <DIR>\n\n\t<ARCH> is either i386
+or amd64\n\t<DIR> is the working directory which will be created \n\t in
+the current directory.\n\n"
+DIRERR="\n\n\t\"$2\" is a reserved name and may not be used as the 
+	directory name.\n\n"
+ISO=devuan_jessie_1.0.0_${1}_NETINST.iso 
+NEWISO=DevuanOP_1.0.0_${1}_NETINST.iso 
+BSDTAR=$(/usr/bin/which bsdtar)
+XORRISO=$(/usr/bin/which xorrisofs) 
+ISOHYBRID=$(find /usr/lib -name isohdpfx.bin)
+
+if [ ! -f $ISO ]; then
+  echo -e $USAGE
+  exit
+elif [ -z $2 ]; then
+  echo -e $USAGE
+  exit
+elif [ $2 = amd64 ]; then
+  echo -e $DIRERR
+  exit
+elif [ $2 = i386 ]; then
+  echo -e $DIRERR
+  exit
+elif [ $2 = OctoSetup ]; then
+  echo -e $DIRERR
+  exit
+fi
+
+if [ -z $BSDTAR ]; then
+  echo
+  echo "You must install the bsdtar package to use this script."
+  echo
+  exit 
+elif [ -z $XORRISO ]; then
+  echo
+  echo "You must install the xorriso package to use this script."
+  echo
+  exit 
+elif [ -z $ISOHYBRID ]; then
+  echo
+  echo "You must install the isolinux package to use this script."
+  echo
+  exit 
+fi
+
+if [ -d $2 ]; then
+  rm -rf $2
+fi
+if [ -f $NEWISO ]; then
+  rm $NEWISO
+fi
+
+/bin/mkdir $2
+$BSDTAR -C $2 -xf $ISO
+
+cp -pR ./OctoSetup ./${1}/preseed* $2/
+cp -p ./${1}/txt* $2/isolinux/
+cd $2/isolinux
+cp menu.cfg menu.bck
+/bin/sed -e '/menu end/a\\menu begin octoprint\n\menu label ^OctoPrint Install\
+\tmenu title Octoprint Installation\n\tinclude stdmenu.cfg\n\tlabel mainmenu\
+\t\tmenu label ^Back..\n\t\tmenu exit\n\tinclude txt1.cfg\n\tinclude txt2.cfg\
+\tinclude txt3.cfg\n\tinclude txt4.cfg\n\tinclude txt5.cfg\nmenu end' -i menu.cfg
+
+cd -
+
+/usr/bin/xorrisofs -o $NEWISO -b isolinux/isolinux.bin \
+   -c isolinux/boot.cat -boot-info-table -no-emul-boot -boot-load-size 4 \
+   -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -partition_offset 16 \
+   ${2}/
+
+echo -e "\n\n\tThe new ISO image: $NEWISO \n\thas been successfully created.\
+\n\tYou can write it to CD with any CD writing tool.\n\tIt can also be written \
+to a USB stick.  If the USB drive is "/dev/sdc",\n\tthe syntax is:
+\n\tdd if=$NEWISO of=/dev/sdc bs=1M\n"

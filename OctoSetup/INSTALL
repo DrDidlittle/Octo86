@@ -1,0 +1,92 @@
+#!/bin/bash
+cd /home/OctoSetup
+
+## By default, apt installs recommended packages with the requested package.
+## We don't want that.
+RECO=$(/bin/grep -irl Recommends /etc/apt/apt.conf.d/)
+if [ -z "$RECO" ]; then
+  echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/08disable-recommends
+fi
+
+# Adding users to own Octoprint and mjpg-streamer
+if [ ! -d /home/mjpeg ]; then
+  /usr/sbin/useradd -U -G video -m -s /bin/bash mjpeg
+fi
+
+if [ ! -d /home/pi ]; then
+  /usr/sbin/useradd -U -G tty,dialout,video -m -s /bin/bash pi
+fi
+
+# Download, build, and install mjpg-streamer
+cd ~mjpeg
+if [ -d mjpg-streamer ]; then
+  rm -rf mjpg-streamer
+fi
+/bin/su - mjpeg -c "(git clone https://github.com/jacksonliam/mjpg-streamer.git)" 
+if [ -d mjpg-streamer/mjpg-streamer-experimental ]; then
+  cd mjpg-streamer/mjpg-streamer-experimental
+  /bin/su mjpeg -c "(export LD_LIBRARY_PATH=.)"
+  /bin/su mjpeg -c /usr/bin/make 
+  if [ ! $? = 0 ]; then
+    exit 3
+  fi
+  /usr/bin/make install 
+  if [ ! $? = 0 ]; then
+    exit 3
+  fi
+  /bin/mkdir -m 2775 /var/www
+  /bin/chgrp video /var/www
+else
+  exit 2
+fi
+
+# Download, build, and install OctoPrint
+cd ~pi
+/bin/su - pi -c "(/usr/bin/git clone https://github.com/foosel/OctoPrint.git)" 
+if [ ! $? = 0 ]; then
+  exit 2
+fi
+if [ -d OctoPrint ]; then
+  cd OctoPrint
+  /bin/su pi -c "(/usr/bin/virtualenv venv)" 
+  if [ ! $? = 0 ]; then
+    exit 3
+  fi
+  /bin/su pi -c "(./venv/bin/pip install pip --upgrade)" 
+  if [ ! $? = 0 ]; then
+    exit 3
+  fi
+  /bin/su pi -c "(./venv/bin/python setup.py install)" 
+  if [ ! $? = 0 ]; then
+    exit 3
+  fi
+  /bin/su - pi -c "(/bin/mkdir ~/.octoprint)" 
+fi
+
+cd /home/OctoSetup
+
+/bin/chmod +x /home/OctoSetup/*.init
+cp -p /home/OctoSetup/octoprint.def /etc/default/octoprint
+cp -p /home/OctoSetup/octoprint.init /etc/init.d/octoprint
+cp -p /home/OctoSetup/mjpg-streamer.def /etc/default/mjpg-streamer
+cp -p /home/OctoSetup/mjpg-streamer.init /etc/init.d/mjpg-streamer
+cp -p /home/OctoSetup/haproxy.cfg /etc/haproxy/
+
+/usr/sbin/update-rc.d octoprint defaults
+/usr/sbin/update-rc.d mjpg-streamer defaults
+
+/bin/sed '/^#host/chost-name=octo86' -i /etc/avahi/avahi-daemon.conf
+/bin/sed '/^AVAHI/s/1/0/' -i /etc/default/avahi-daemon
+
+WIFI=$(/bin/grep 'wlan. inet ' /etc/network/interfaces|cut -d\  -f2)
+if [ ! $WIFI = 0 ]; then
+  SSID=$(/bin/grep wpa-ssid /etc/network/interfaces |cut -d\  -f2)
+  PSK=$(/bin/grep wpa-psk /etc/network/interfaces |cut -d\  -f3)
+  /usr/bin/wpa_passphrase $SSID $PSK |grep -v '\#psk' > /etc/wpa_supplicant/wpa.conf
+  /bin/chmod 0600 /etc/wpa_supplicant/wpa.conf
+  echo >> /etc/network/interfaces.d/00wireless
+  echo "auto $WIFI"  >> /etc/network/interfaces.d/00wireless
+  echo "iface $WIFI inet dhcp" >> /etc/network/interfaces.d/00wireless
+  echo "    wpa-conf /etc/wpa_supplicant/wpa.conf" >> /etc/network/interfaces.d/00wireless
+fi
+
