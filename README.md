@@ -29,7 +29,7 @@ x86 based CPU - 1.5GHz recommended
 
 1) Download the repository as a ZIP file. Unzip the file with the "-X" option and CD into the new directory For example:
 
-   $ unzip -X Octo86-master && cd Octo86-master/Octo86
+   $ unzip -X Octo86-master && cd Octo86-master/
 
 2) Read the included README files.  This is important!
 3) Download or copy the Devuan v1.0.0 NETINST ISO file into the directory.  DO NOT CHANGE THE NAME OF THE ISO FILE!  The setup script depends on the ISO name as set by Devuan.
