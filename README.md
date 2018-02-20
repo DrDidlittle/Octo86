@@ -1,5 +1,4 @@
-# Octo86_for_Devuan_1.0.0
-Automated Devuan-based OctoPrint installation for PC
+# Automated Devuan-based OctoPrint installation for PC
 
   I've been using the popular "octopi" release of foosle's OctoPrint for a while.  Various factors prompted me to move to an Atom-based netbook to host Octoprint.  I didn't find sutiable distribution packages for either OctoPrint or mjpg-streamer, so I decided to just create an automated installation for the whole works.
 
