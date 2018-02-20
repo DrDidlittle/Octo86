@@ -1,6 +1,6 @@
 # Automated Devuan-based OctoPrint installation for PC
 
-  I've been using the popular "octopi" release of foosle's OctoPrint for a while.  Various factors prompted me to move to an Atom-based netbook to host Octoprint.  I didn't find sutiable distribution packages for either OctoPrint or mjpg-streamer, so I decided to just create an automated installation for the whole works.
+  I've been using the popular "octopi" release of foosle's OctoPrint for a while.  Various factors prompted me to move to an Atom-based netbook to host Octoprint.  I didn't find suitable distribution packages for either OctoPrint or mjpg-streamer, so I just created an automated installation for the whole works.
 
   These scripts are based on Devuan's NETINST installation images.  They modify the stock ISO to provide options to install Octoprint as a system service.  The resulting bootable ISO image can be burned to CD or DVD or dd'ed to a USB flash drive.
 
