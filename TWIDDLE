@@ -69,6 +69,7 @@ fi
 
 /bin/mkdir $2
 $BSDTAR -C $2 -xf $ISO
+/bin/chmod -R +x $2
 
 cp -pR ./OctoSetup ./${1}/preseed* $2/
 cp -p ./${1}/txt* $2/isolinux/
