@@ -22,7 +22,6 @@ PKGNAME=mjpg-streamer
 PIDFILE=/var/run/$PKGNAME.pid
 SCRIPTNAME=/etc/init.d/$PKGNAME
 DEFAULTS=/etc/default/$PKGNAME
-echo $DEFAULTS
 
 # Read configuration variable file if it is present
 [ -r $DEFAULTS ] && . $DEFAULTS

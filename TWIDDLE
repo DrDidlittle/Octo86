@@ -15,7 +15,7 @@
 ########################################################################
 
 
-USAGE="\n\tUsage:\n\n\t./twiddler <ARCH> <DIR>\n\n\t<ARCH> is either i386
+USAGE="\n\tUsage:\n\n\t./TWIDDLE <ARCH> <DIR>\n\n\t<ARCH> is either i386
 or amd64\n\t<DIR> is the working directory which will be created \n\t in
 the current directory.\n\n"
 DIRERR="\n\n\t\"$2\" is a reserved name and may not be used as the 
@@ -69,10 +69,10 @@ fi
 
 /bin/mkdir $2
 $BSDTAR -C $2 -xf $ISO
-/bin/chmod -R +x $2
+/bin/chmod -R +w $2
 
-cp -pR ./OctoSetup ./${1}/preseed* $2/
-cp -p ./${1}/txt* $2/isolinux/
+cp -pR ./OctoSetup $2/
+cp -p ./${1}/txt* ./${1}/preseed* $2/isolinux/
 cd $2/isolinux
 cp menu.cfg menu.bck
 /bin/sed -e '/menu end/a\\menu begin octoprint\n\menu label ^OctoPrint Install\

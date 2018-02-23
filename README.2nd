@@ -108,10 +108,10 @@ V.  Post-Install for all Octoprint Install options:
       You should change both users' passwords immediately!
 2)  Octoprint is available at:
       http://<your IP>/
-    The webcam is accessed at:
-      http://<your IP>/webcam/
+    The webcam snapshot image is accessed at:
+      http://<your IP>/cam/?action=snapshot
     The webcam streaming image is accessed at:
-      http://<your IP>/webcam/?action=stream
+      http://<your IP>/cam/?action=stream
     (This is the address to use when configuring OctoPrint.)
 3)  If your client supports ZeroConf networks, such as Bonjour or Avahi,
       Octoprint is available at:
